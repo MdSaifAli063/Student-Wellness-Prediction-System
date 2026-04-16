@@ -1,5 +1,13 @@
 # Student Lifestyle Dropout Risk Predictor
 
+## Overview
+
+- `📊` Student lifestyle prediction dashboard
+- `☁️` IBM Cloud deployment scoring integration
+- `🧾` Table view and JSON view results
+- `🌗` Light and dark mode UI
+- `📁` CSV upload and manual record entry
+
 A Node.js + Express web application for scoring a student lifestyle dataset against an IBM Cloud deployed machine learning model.
 
 This project provides:
@@ -8,7 +16,7 @@ This project provides:
 - prediction output in table view and JSON view
 - a fixed schema based on the student lifestyle CSV columns
 
-## Project Overview
+## `🚀` Project Overview
 
 This app is built for a student lifestyle prediction workflow where the input schema is fixed to the following 19 columns:
 
@@ -21,7 +29,7 @@ The frontend allows you to:
 - view results in table and JSON formats
 - download prediction results as JSON
 
-## Tech Stack
+## `🛠️` Tech Stack
 
 - Node.js
 - Express
@@ -29,7 +37,7 @@ The frontend allows you to:
 - HTML / CSS / JavaScript
 - IBM Cloud IAM + deployment scoring API
 
-## Project Structure
+## `📂` Project Structure
 
 ```text
 .
@@ -44,15 +52,15 @@ The frontend allows you to:
 `-- server.js
 ```
 
-## Setup
+## `⚙️` Setup
 
-### 1. Install dependencies
+### 1. `📦` Install dependencies
 
 ```powershell
 npm install
 ```
 
-### 2. Configure environment variables
+### 2. `🔐` Configure environment variables
 
 Create or update `.env` with:
 
@@ -66,7 +74,7 @@ Notes:
 - `SCORING_URL` should point to your deployment scoring endpoint
 - if your scoring URL is a private IBM endpoint, your machine must have network access to it
 
-### 3. Start the application
+### 3. `▶️` Start the application
 
 ```powershell
 npm start
@@ -78,9 +86,9 @@ Open:
 http://localhost:3000
 ```
 
-## How It Works
+## `🧠` How It Works
 
-### Frontend
+### `🎨` Frontend
 
 The frontend:
 - loads the fixed dataset schema
@@ -89,7 +97,7 @@ The frontend:
 - sends a POST request to `/api/predict`
 - renders prediction output in table view and JSON view
 
-### Backend
+### `🖥️` Backend
 
 The backend in `server.js`:
 - reads `API_KEY` and `SCORING_URL` from `.env`
@@ -98,9 +106,9 @@ The backend in `server.js`:
 - sends the scoring payload to IBM Cloud
 - returns formatted prediction data and raw IBM response
 
-## API Endpoints
+## `🔌` API Endpoints
 
-### `GET /api/config`
+### `GET /api/config` `ℹ️`
 
 Returns app configuration metadata:
 - whether `API_KEY` exists
@@ -108,7 +116,7 @@ Returns app configuration metadata:
 - the scoring URL
 - the required input fields
 
-### `POST /api/predict`
+### `POST /api/predict` `🤖`
 
 Expected request body:
 
@@ -141,7 +149,7 @@ Expected request body:
 }
 ```
 
-## CSV Requirements
+## `📄` CSV Requirements
 
 Your CSV must use this exact header row:
 
@@ -151,9 +159,9 @@ age,gender,academic_year,exam_pressure,academic_performance,stress_level,anxiety
 
 If the header order is different, the frontend and backend will reject it.
 
-## Troubleshooting
+## `🧯` Troubleshooting
 
-### 1. Prediction failed
+### 1. `❌` Prediction failed
 
 If the UI shows a prediction failure, check:
 - your IBM Cloud `API_KEY`
@@ -161,7 +169,7 @@ If the UI shows a prediction failure, check:
 - whether the deployment expects the same 19 input fields
 - whether the endpoint is public or private
 
-### 2. Private IBM endpoint timeout
+### 2. `🌐` Private IBM endpoint timeout
 
 If your scoring URL looks like:
 
@@ -176,11 +184,11 @@ You may need:
 - IBM private network access
 - a public scoring endpoint instead of a private one
 
-### 3. Invalid API key
+### 3. `🔑` Invalid API key
 
 If the IBM IAM token request fails, replace the API key with a valid IAM API key from your IBM Cloud account.
 
-## Features
+## `✨` Features
 
 - fixed schema validation
 - CSV upload support
@@ -192,20 +200,20 @@ If the IBM IAM token request fails, replace the API key with a valid IAM API key
 - JSON export
 - light and dark theme support
 
-## Security Notes
+## `🔒` Security Notes
 
 - `.env` is ignored by `.gitignore`
 - do not commit real IBM Cloud credentials
 - use `.env.example` if you later want to share a template safely
 
-## Future Improvements
+## `🧩` Future Improvements
 
 - add `.env.example`
 - support model-specific field templates
 - add client-side CSV preview validation
 - display clearer endpoint diagnostics for private IBM deployments
 
-## Authoring Context
+## `📝` Authoring Context
 
 This README is tailored to the current project implementation in:
 - [server.js](/d:/Machine%20Learning%20Project/server.js)
