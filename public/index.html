@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Student Dropout Risk Predictor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Manrope:wght@400;500;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body data-theme="dark">
+    <div class="page-shell">
+      <header class="hero">
+        <nav class="topbar">
+          <div class="brand-cluster">
+            <div class="brand">
+              <span class="brand-mark">IBM</span>
+              <div>
+                <p class="eyebrow">Student Lifestyle ML Solution</p>
+                <h1>Dropout Risk Prediction Dashboard</h1>
+              </div>
+            </div>
+            <p class="hero-subline">
+              A refined scoring experience for your student lifestyle dataset, built for clean demos and practical use.
+            </p>
+          </div>
+
+          <div class="topbar-side">
+            <label class="theme-toggle" for="themeToggle">
+              <input id="themeToggle" type="checkbox" />
+              <span class="theme-track">
+                <span class="theme-thumb"></span>
+              </span>
+              <span class="theme-label">Light mode</span>
+            </label>
+            <div class="status-pill" id="connectionStatus">Checking configuration...</div>
+          </div>
+        </nav>
+
+        <div class="hero-grid">
+          <section class="hero-copy glass-card accent-card">
+            <p class="section-tag">Problem Statement</p>
+            <h2>Predict student risk outcomes using your lifestyle dataset.</h2>
+            <p>
+              This interface is tailored to your fixed CSV schema. Add rows
+              manually or upload a matching CSV, then send batch records to your
+              IBM Cloud deployment and review the results in a polished
+              regression-style dashboard.
+            </p>
+            <div class="hero-points">
+              <span>Fixed 19-column schema</span>
+              <span>CSV upload and manual table</span>
+              <span>IBM Cloud batch scoring</span>
+            </div>
+          </section>
+
+          <section class="hero-side glass-card">
+            <p class="section-tag">Solution Highlights</p>
+            <div class="metric-grid">
+              <div class="metric">
+                <strong>Dataset Specific</strong>
+                <span>Aligned to your student lifestyle columns and input order</span>
+              </div>
+              <div class="metric">
+                <strong>Clear Results</strong>
+                <span>Switch between table and JSON views with technical details</span>
+              </div>
+              <div class="metric">
+                <strong>Theme Support</strong>
+                <span>Balanced dark and light modes with consistent layout</span>
+              </div>
+            </div>
+          </section>
+        </div>
+      </header>
+
+      <main class="workspace">
+        <section class="panel form-panel">
+          <div class="panel-header">
+            <div>
+              <p class="section-tag">Input Data</p>
+              <h3>Enter student lifestyle records</h3>
+            </div>
+            <div class="header-actions">
+              <label class="file-btn secondary-btn" for="csvFileInput">Upload CSV</label>
+              <input id="csvFileInput" type="file" accept=".csv,text/csv" hidden />
+              <button class="secondary-btn" id="loadDemoBtn" type="button">
+                Load Demo Data
+              </button>
+            </div>
+          </div>
+
+          <div class="info-grid">
+            <div class="schema-box">
+              <label>Expected CSV Columns</label>
+              <p id="schemaText" class="schema-text"></p>
+              <small>
+                Use the exact same column order as your uploaded dataset for correct IBM Cloud scoring.
+              </small>
+            </div>
+
+            <div class="helper-box">
+              <label>Usage Notes</label>
+              <p>Use the input table for manual entry, or upload a CSV that matches the schema exactly.</p>
+              <small>
+                Predictions depend on your IBM deployment being reachable and configured with the expected model inputs.
+              </small>
+            </div>
+          </div>
+
+          <div class="panel-header compact">
+            <div>
+              <label>Input Table</label>
+              <small>Fill one or more student records. Leave no missing values unless your model supports them.</small>
+            </div>
+            <button class="secondary-btn" id="addRowBtn" type="button">Add Row</button>
+          </div>
+
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead id="tableHead"></thead>
+              <tbody id="tableBody"></tbody>
+            </table>
+          </div>
+
+          <div class="actions">
+            <button class="primary-btn" id="predictBtn" type="button">
+              Run Prediction
+            </button>
+            <button class="ghost-btn" id="resetBtn" type="button">Reset</button>
+          </div>
+
+          <div class="message-box" id="messageBox"></div>
+        </section>
+
+        <section class="panel result-panel">
+          <div class="panel-header">
+            <div>
+              <p class="section-tag">Prediction Output</p>
+              <h3>IBM deployment response</h3>
+            </div>
+            <button class="secondary-btn" id="downloadJsonBtn" type="button">
+              Download JSON
+            </button>
+          </div>
+
+          <section class="results-shell">
+            <div class="results-layout">
+              <aside class="results-summary">
+                <div class="summary-card summary-primary">
+                  <p class="results-label">Prediction type</p>
+                  <h2 class="results-type" id="predictionType">Regression</h2>
+                  <p class="summary-caption">Output is styled for quick review and presentation.</p>
+                </div>
+
+                <div class="distribution-card">
+                  <p class="results-subtitle">Prediction distribution</p>
+                  <div class="mini-chart" id="distributionChart">
+                    <div class="chart-empty">Prediction chart will appear here.</div>
+                  </div>
+                </div>
+              </aside>
+
+              <div class="results-main">
+                <div class="results-toolbar">
+                  <div class="view-switch">
+                    <p class="results-label">Display format for prediction results</p>
+                    <div class="radio-row">
+                      <label class="radio-option">
+                        <input type="radio" name="resultView" value="table" checked />
+                        <span>Table view</span>
+                      </label>
+                      <label class="radio-option">
+                        <input type="radio" name="resultView" value="json" />
+                        <span>JSON view</span>
+                      </label>
+                    </div>
+                  </div>
+
+                  <label class="toggle-option">
+                    <input id="showInputToggle" type="checkbox" />
+                    <span class="toggle-slider"></span>
+                    <span class="toggle-text">Show input data</span>
+                  </label>
+                </div>
+
+                <div class="view-panel" id="tableViewPanel">
+                  <div class="results-table-wrap">
+                    <table class="results-table">
+                      <thead id="predictionTableHead"></thead>
+                      <tbody id="predictionTableBody"></tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <div class="view-panel hidden" id="jsonViewPanel">
+                  <pre class="json-output" id="jsonOutput">Prediction results will appear here.</pre>
+                </div>
+              </div>
+            </div>
+
+            <details class="debug-section">
+              <summary>Technical details</summary>
+              <div class="debug-grid">
+                <div class="output-card">
+                  <div class="output-title">Submitted Payload</div>
+                  <pre id="payloadOutput">No request submitted yet.</pre>
+                </div>
+
+                <div class="output-card">
+                  <div class="output-title">Raw IBM Cloud Response</div>
+                  <pre id="resultOutput">Prediction results will appear here.</pre>
+                </div>
+              </div>
+            </details>
+          </section>
+        </section>
+      </main>
+    </div>
+
+    <script src="/script.js"></script>
+  </body>
+</html>

@@ -1,0 +1,9 @@
+{
+  "name": "ibm-cloud-ml-frontend",
+  "version": "1.0.0",
+  "description": "Beautiful frontend for IBM Cloud machine learning deployment scoring",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  }
+}
