@@ -11,6 +11,7 @@
 A Node.js + Express web application for scoring a student lifestyle dataset against an IBM Cloud deployed machine learning model.
 
 This project provides:
+
 - a polished frontend for entering or uploading student records
 - a backend API that authenticates with IBM Cloud IAM
 - prediction output in table view and JSON view
@@ -20,9 +21,10 @@ This project provides:
 
 This app is built for a student lifestyle prediction workflow where the input schema is fixed to the following 19 columns:
 
-`age, gender, academic_year, exam_pressure, academic_performance, stress_level, anxiety_score, depression_score, sleep_hours, physical_activity, social_support, screen_time, internet_usage, financial_stress, family_expectation, burnout_score, mental_health_index, risk_level, dropout_risk`
+`age, gender, academic_year, study_hours_per_day, exam_pressure, academic_performance, stress_level, anxiety_score, sleep_hours, physical_activity, social_support, screen_time, internet_usage, financial_stress, family_expectation, burnout_score, mental_health_index, risk_level, dropout_risk`
 
 The frontend allows you to:
+
 - manually enter rows in a table
 - upload a CSV file with the exact same header order
 - send one or more rows to your IBM Cloud deployment
@@ -70,6 +72,7 @@ SCORING_URL=your_ibm_cloud_scoring_url
 ```
 
 Notes:
+
 - `API_KEY` must be a valid IBM Cloud IAM API key
 - `SCORING_URL` should point to your deployment scoring endpoint
 - if your scoring URL is a private IBM endpoint, your machine must have network access to it
@@ -91,6 +94,7 @@ http://localhost:3000
 ### `🎨` Frontend
 
 The frontend:
+
 - loads the fixed dataset schema
 - validates CSV header order
 - collects row values from the input table
@@ -100,6 +104,7 @@ The frontend:
 ### `🖥️` Backend
 
 The backend in `server.js`:
+
 - reads `API_KEY` and `SCORING_URL` from `.env`
 - requests an IBM IAM access token
 - validates that the submitted fields match the fixed 19-column schema
@@ -111,6 +116,7 @@ The backend in `server.js`:
 ### `GET /api/config` `ℹ️`
 
 Returns app configuration metadata:
+
 - whether `API_KEY` exists
 - whether `SCORING_URL` exists
 - the scoring URL
@@ -126,11 +132,11 @@ Expected request body:
     "age",
     "gender",
     "academic_year",
+    "study_hours_per_day",
     "exam_pressure",
     "academic_performance",
     "stress_level",
     "anxiety_score",
-    "depression_score",
     "sleep_hours",
     "physical_activity",
     "social_support",
@@ -154,7 +160,7 @@ Expected request body:
 Your CSV must use this exact header row:
 
 ```csv
-age,gender,academic_year,exam_pressure,academic_performance,stress_level,anxiety_score,depression_score,sleep_hours,physical_activity,social_support,screen_time,internet_usage,financial_stress,family_expectation,burnout_score,mental_health_index,risk_level,dropout_risk
+age,gender,academic_year,study_hours_per_day,exam_pressure,academic_performance,stress_level,anxiety_score,sleep_hours,physical_activity,social_support,screen_time,internet_usage,financial_stress,family_expectation,burnout_score,mental_health_index,risk_level,dropout_risk
 ```
 
 If the header order is different, the frontend and backend will reject it.
@@ -164,6 +170,7 @@ If the header order is different, the frontend and backend will reject it.
 ### 1. `❌` Prediction failed
 
 If the UI shows a prediction failure, check:
+
 - your IBM Cloud `API_KEY`
 - your `SCORING_URL`
 - whether the deployment expects the same 19 input fields
@@ -180,6 +187,7 @@ https://private.<region>.ml.cloud.ibm.com/...
 then your machine may not have access to that deployment.
 
 You may need:
+
 - VPN access
 - IBM private network access
 - a public scoring endpoint instead of a private one
@@ -216,6 +224,7 @@ If the IBM IAM token request fails, replace the API key with a valid IAM API key
 ## `📝` Authoring Context
 
 This README is tailored to the current project implementation in:
+
 - [server.js](/d:/Machine%20Learning%20Project/server.js)
 - [public/index.html](/d:/Machine%20Learning%20Project/public/index.html)
 - [public/styles.css](/d:/Machine%20Learning%20Project/public/styles.css)
