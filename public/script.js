@@ -67,6 +67,15 @@ function initializeTheme() {
 function setMessage(type, text) {
   messageBox.className = `message-box show ${type}`;
   messageBox.textContent = text;
+  
+  // Auto-hide success/info messages
+  if (type === "success" || type === "info") {
+    setTimeout(() => {
+      if (messageBox.textContent === text) {
+        clearMessage();
+      }
+    }, 5000);
+  }
 }
 
 function clearMessage() {
@@ -121,7 +130,7 @@ function renderHeader() {
   tableHead.innerHTML = `
     <tr>
       <th class="row-index">#</th>
-      ${FIXED_FIELDS.map((field) => `<th>${field}</th>`).join("")}
+      ${FIXED_FIELDS.map((field) => `<th>${field.replace(/_/g, ' ')}</th>`).join("")}
       <th class="table-action-cell">Action</th>
     </tr>
   `;
@@ -146,13 +155,21 @@ function addTableRow(rowData = {}) {
     <td class="row-index"></td>
     ${FIXED_FIELDS.map((field) => buildCell(field, rowData[field] ?? "")).join("")}
     <td class="table-action-cell">
-      <button class="danger-btn remove-row-btn" type="button">Remove</button>
+      <button class="danger-btn remove-row-btn" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:14px;height:14px;">
+          <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+        </svg>
+        Remove
+      </button>
     </td>
   `;
 
   row.querySelector(".remove-row-btn").addEventListener("click", () => {
-    row.remove();
-    renumberTable();
+    row.style.animation = "slideOut 0.3s ease forwards";
+    setTimeout(() => {
+      row.remove();
+      renumberTable();
+    }, 280);
   });
 
   tableBody.appendChild(row);
@@ -227,15 +244,22 @@ function detectPredictionType(predictionRows) {
 
   const firstRow = predictionRows[0];
   const firstValue = Object.values(firstRow)[0];
-  return typeof firstValue === "number" ? "Regression" : "Prediction";
+  return typeof firstValue === "number" ? "Regression" : "Classification";
 }
 
 function renderDistribution(predictionRows) {
   distributionChart.innerHTML = "";
 
   if (!predictionRows.length) {
-    distributionChart.innerHTML =
-      '<div class="chart-empty">Prediction chart will appear here.</div>';
+    distributionChart.innerHTML = `
+      <div class="chart-empty">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 3v18h18"/>
+          <path d="M18 17V9M13 17V5M8 17v-3"/>
+        </svg>
+        <span>Prediction chart will appear here</span>
+      </div>
+    `;
     return;
   }
 
@@ -245,8 +269,11 @@ function renderDistribution(predictionRows) {
     .filter((value) => value !== null && value !== undefined);
 
   if (!values.length) {
-    distributionChart.innerHTML =
-      '<div class="chart-empty">Prediction chart will appear here.</div>';
+    distributionChart.innerHTML = `
+      <div class="chart-empty">
+        <span>No valid prediction values found</span>
+      </div>
+    `;
     return;
   }
 
@@ -255,31 +282,73 @@ function renderDistribution(predictionRows) {
     .filter((value) => !Number.isNaN(value));
 
   if (!numericValues.length) {
-    distributionChart.innerHTML =
-      '<div class="chart-empty">Prediction distribution is available only for numeric regression output.</div>';
+    // For classification, show category counts
+    const counts = {};
+    values.forEach(v => { counts[v] = (counts[v] || 0) + 1; });
+    const categories = Object.keys(counts);
+    const maxCount = Math.max(...Object.values(counts));
+    
+    const bars = categories.map((cat, idx) => {
+      const height = (counts[cat] / maxCount) * 180;
+      const width = 100 / categories.length - 4;
+      const left = (100 / categories.length) * idx + 2;
+      return `<div class="plot-bar" style="height:${height}px;width:${width}%;left:${left}%;right:auto;animation-delay:${idx * 0.1}s"></div>`;
+    }).join("");
+    
+    const labels = categories.map((cat, idx) => 
+      `<span class="x-tick" style="flex:1;text-align:center">${escapeHtml(cat)}</span>`
+    ).join("");
+    
+    distributionChart.innerHTML = `
+      <div class="distribution-plot">
+        <div class="y-axis-label">Count</div>
+        <div class="plot-area">
+          <div class="y-tick-top">${maxCount}</div>
+          <div class="y-tick-bottom">0</div>
+          ${bars}
+        </div>
+        <div class="x-axis">${labels}</div>
+        <div class="x-axis-label">Categories</div>
+      </div>
+    `;
     return;
   }
 
   const minValue = Math.min(...numericValues);
   const maxValue = Math.max(...numericValues);
-  const uniqueCount = new Set(numericValues.map((value) => value.toFixed(6))).size;
-  const barHeight = 178;
-  const leftTick = minValue.toFixed(6);
-  const rightTick = maxValue.toFixed(6);
+  
+  // Create histogram bins
+  const binCount = Math.min(10, numericValues.length);
+  const binSize = (maxValue - minValue) / binCount || 1;
+  const bins = new Array(binCount).fill(0);
+  
+  numericValues.forEach(v => {
+    const binIndex = Math.min(Math.floor((v - minValue) / binSize), binCount - 1);
+    bins[binIndex]++;
+  });
+  
+  const maxBinCount = Math.max(...bins);
+  
+  const bars = bins.map((count, idx) => {
+    const height = maxBinCount > 0 ? (count / maxBinCount) * 180 : 0;
+    const width = 100 / binCount - 1;
+    const left = (100 / binCount) * idx + 0.5;
+    return `<div class="plot-bar" style="height:${height}px;width:${width}%;left:${left}%;right:auto;animation-delay:${idx * 0.05}s" title="${count}"></div>`;
+  }).join("");
 
   distributionChart.innerHTML = `
     <div class="distribution-plot">
-      <div class="y-axis-label">Number of predictions</div>
+      <div class="y-axis-label">Frequency</div>
       <div class="plot-area">
-        <div class="y-tick-top">${Math.max(uniqueCount > 0 ? 1 : 0, 1)}</div>
+        <div class="y-tick-top">${maxBinCount}</div>
         <div class="y-tick-bottom">0</div>
-        <div class="plot-bar" style="height:${barHeight}px"></div>
+        ${bars}
       </div>
       <div class="x-axis">
-        <span class="x-tick">${escapeHtml(leftTick)}</span>
-        <span class="x-tick right">${escapeHtml(rightTick)}</span>
+        <span class="x-tick">${escapeHtml(minValue.toFixed(2))}</span>
+        <span class="x-tick right">${escapeHtml(maxValue.toFixed(2))}</span>
       </div>
-      <div class="x-axis-label">Prediction value</div>
+      <div class="x-axis-label">Prediction Value</div>
     </div>
   `;
 }
@@ -296,7 +365,7 @@ function renderPredictionTable(rows) {
   predictionTableHead.innerHTML = `
     <tr>
       <th>#</th>
-      ${columns.map((column) => `<th>${escapeHtml(column)}</th>`).join("")}
+      ${columns.map((column) => `<th>${escapeHtml(column.replace(/_/g, ' '))}</th>`).join("")}
     </tr>
   `;
 
@@ -304,8 +373,12 @@ function renderPredictionTable(rows) {
     .map(
       (row, index) => `
         <tr>
-          <td>${index + 1}</td>
-          ${columns.map((column) => `<td>${escapeHtml(row[column])}</td>`).join("")}
+          <td class="row-index">${index + 1}</td>
+          ${columns.map((column) => {
+            const val = row[column];
+            const isNumeric = typeof val === 'number';
+            return `<td>${isNumeric ? val.toFixed(4) : escapeHtml(val)}</td>`;
+          }).join("")}
         </tr>
       `
     )
@@ -335,14 +408,19 @@ function switchResultView(mode) {
 }
 
 function downloadJsonFile() {
-  const content = JSON.stringify(latestDownloadPayload || [], null, 2);
+  if (!latestDownloadPayload || !latestDownloadPayload.length) {
+    setMessage("error", "No prediction data available to download.");
+    return;
+  }
+  const content = JSON.stringify(latestDownloadPayload, null, 2);
   const blob = new Blob([content], { type: "application/json" });
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement("a");
   anchor.href = url;
-  anchor.download = "prediction-results.json";
+  anchor.download = `prediction-results-${Date.now()}.json`;
   anchor.click();
   URL.revokeObjectURL(url);
+  setMessage("success", "Downloaded prediction results successfully!");
 }
 
 async function loadCsvFile(file) {
@@ -382,7 +460,7 @@ async function loadCsvFile(file) {
     addTableRow(rowObject);
   });
 
-  setMessage("success", `Loaded ${rows.length} row(s) from CSV successfully.`);
+  setMessage("success", `✅ Loaded ${rows.length} row(s) from CSV successfully!`);
 }
 
 async function fetchConfig() {
@@ -391,14 +469,24 @@ async function fetchConfig() {
     const config = await response.json();
     const ready = config.hasApiKey && config.hasScoringUrl;
 
-    connectionStatus.textContent = ready
-      ? "IBM Cloud configuration detected"
-      : "Configuration incomplete";
+    const statusIndicator = connectionStatus.querySelector(".status-indicator");
+    const statusText = connectionStatus.querySelector(".status-text");
 
-    connectionStatus.style.color = ready ? "var(--accent-2)" : "var(--accent-3)";
+    if (ready) {
+      statusText.textContent = "IBM Cloud Connected";
+      statusIndicator.style.background = "var(--success)";
+      statusIndicator.style.boxShadow = "0 0 10px var(--success)";
+    } else {
+      statusText.textContent = "Configuration Incomplete";
+      statusIndicator.style.background = "var(--warning)";
+      statusIndicator.style.boxShadow = "0 0 10px var(--warning)";
+    }
   } catch (_error) {
-    connectionStatus.textContent = "Unable to read configuration";
-    connectionStatus.style.color = "var(--danger)";
+    const statusIndicator = connectionStatus.querySelector(".status-indicator");
+    const statusText = connectionStatus.querySelector(".status-text");
+    statusText.textContent = "Connection Error";
+    statusIndicator.style.background = "var(--danger)";
+    statusIndicator.style.boxShadow = "0 0 10px var(--danger)";
   }
 }
 
@@ -446,7 +534,7 @@ function loadDemoData() {
     risk_level: "Low",
     dropout_risk: 0,
   });
-  setMessage("info", "Demo student records loaded into the fixed dataset table.");
+  setMessage("info", "📊 Demo student records loaded successfully!");
 }
 
 async function runPrediction() {
@@ -456,7 +544,7 @@ async function runPrediction() {
   const values = getTableRows();
 
   if (!values.length) {
-    setMessage("error", "Please add at least one row of input values.");
+    setMessage("error", "⚠️ Please add at least one row of input values.");
     return;
   }
 
@@ -464,18 +552,19 @@ async function runPrediction() {
   if (invalidRow) {
     setMessage(
       "error",
-      `Each row must contain exactly ${fields.length} values to match the dataset schema.`
+      `⚠️ Each row must contain exactly ${fields.length} values to match the dataset schema.`
     );
     return;
   }
 
   predictBtn.disabled = true;
-  predictBtn.textContent = "Running...";
+  const originalContent = predictBtn.innerHTML;
+  predictBtn.innerHTML = '<span style="margin-left:24px;">Processing...</span>';
 
   const payload = { fields, values };
   latestSubmittedValues = values;
   payloadOutput.textContent = JSON.stringify(payload, null, 2);
-  resultOutput.textContent = "Waiting for IBM Cloud response...";
+  resultOutput.textContent = "⏳ Waiting for IBM Cloud response...";
   latestPredictionRows = [];
   updateResultViews();
   renderDistribution([]);
@@ -500,7 +589,10 @@ async function runPrediction() {
     payloadOutput.textContent = JSON.stringify(data.submittedPayload, null, 2);
     updateResultViews();
     renderDistribution(latestPredictionRows);
-    setMessage("success", "Prediction completed successfully.");
+    setMessage("success", `✅ Prediction completed! ${latestPredictionRows.length} result(s) returned.`);
+    
+    // Scroll to results
+    document.querySelector('.result-panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
   } catch (error) {
     resultOutput.textContent =
       error.message || "An unknown error occurred while scoring.";
@@ -509,11 +601,11 @@ async function runPrediction() {
     renderDistribution([]);
     setMessage(
       "error",
-      "Prediction failed. Check your IBM API key, scoring URL, and that your IBM deployment expects these exact student lifestyle columns."
+      "❌ Prediction failed. Check your IBM API key, scoring URL, and deployment configuration."
     );
   } finally {
     predictBtn.disabled = false;
-    predictBtn.textContent = "Run Prediction";
+    predictBtn.innerHTML = originalContent;
   }
 }
 
@@ -528,7 +620,21 @@ function resetAll() {
   showInputToggle.checked = false;
   updateResultViews();
   renderDistribution([]);
+  setMessage("info", "🔄 Form reset successfully.");
 }
+
+// Add slideOut animation
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes slideOut {
+    to {
+      opacity: 0;
+      transform: translateX(20px);
+      height: 0;
+    }
+  }
+`;
+document.head.appendChild(style);
 
 addRowBtn.addEventListener("click", () => addTableRow());
 loadDemoBtn.addEventListener("click", loadDemoData);
@@ -550,7 +656,7 @@ csvFileInput.addEventListener("change", async (event) => {
   try {
     await loadCsvFile(file);
   } catch (error) {
-    setMessage("error", error.message || "Unable to load the CSV file.");
+    setMessage("error", `❌ ${error.message || "Unable to load the CSV file."}`);
   } finally {
     csvFileInput.value = "";
   }
@@ -560,6 +666,18 @@ document.querySelectorAll('input[name="resultView"]').forEach((input) => {
   input.addEventListener("change", (event) => {
     switchResultView(event.target.value);
   });
+});
+
+// Keyboard shortcuts
+document.addEventListener('keydown', (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+    e.preventDefault();
+    runPrediction();
+  }
+  if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
+    e.preventDefault();
+    loadDemoData();
+  }
 });
 
 initializeTheme();
