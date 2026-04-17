@@ -146,12 +146,16 @@ body {
 }
 
 @keyframes float {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translate(0, 0) scale(1);
   }
+
   33% {
     transform: translate(50px, -50px) scale(1.1);
   }
+
   66% {
     transform: translate(-30px, 30px) scale(0.95);
   }
@@ -192,9 +196,12 @@ body::before {
 }
 
 @keyframes gradientShift {
-  0%, 100% {
+
+  0%,
+  100% {
     background-position: 0% 50%;
   }
+
   50% {
     background-position: 100% 50%;
   }
@@ -283,8 +290,15 @@ body::before {
 }
 
 @keyframes shine {
-  0%, 100% { transform: translateX(-100%); }
-  50% { transform: translateX(100%); }
+
+  0%,
+  100% {
+    transform: translateX(-100%);
+  }
+
+  50% {
+    transform: translateX(100%);
+  }
 }
 
 .brand-mark:hover {
@@ -318,10 +332,13 @@ body::before {
 }
 
 @keyframes pulse {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 1;
     transform: scale(1);
   }
+
   50% {
     opacity: 0.6;
     transform: scale(1.3);
@@ -439,10 +456,13 @@ h3 {
 }
 
 @keyframes pulseGlow {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 0.5;
     transform: scale(1);
   }
+
   50% {
     opacity: 0.8;
     transform: scale(1.1);
@@ -455,13 +475,11 @@ h3 {
   position: absolute;
   inset: 0 0 auto 0;
   height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    color-mix(in srgb, var(--accent) 70%, transparent),
-    color-mix(in srgb, var(--accent-3) 70%, transparent),
-    transparent
-  );
+  background: linear-gradient(90deg,
+      transparent,
+      color-mix(in srgb, var(--accent) 70%, transparent),
+      color-mix(in srgb, var(--accent-3) 70%, transparent),
+      transparent);
   pointer-events: none;
 }
 
@@ -655,16 +673,16 @@ h3 {
   transform: rotate(0);
 }
 
-.theme-toggle input:checked + .theme-track .theme-thumb {
+.theme-toggle input:checked+.theme-track .theme-thumb {
   transform: translateX(28px);
 }
 
-.theme-toggle input:checked + .theme-track .icon-sun {
+.theme-toggle input:checked+.theme-track .icon-sun {
   opacity: 1;
   transform: rotate(0);
 }
 
-.theme-toggle input:checked + .theme-track .icon-moon {
+.theme-toggle input:checked+.theme-track .icon-moon {
   opacity: 0;
   transform: rotate(90deg);
 }
@@ -805,12 +823,10 @@ button:active {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.3),
-    transparent
-  );
+  background: linear-gradient(90deg,
+      transparent,
+      rgba(255, 255, 255, 0.3),
+      transparent);
   transition: left 0.6s ease;
 }
 
@@ -885,6 +901,7 @@ button:active {
     opacity: 0;
     transform: translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -1091,15 +1108,14 @@ small {
 .summary-bg {
   position: absolute;
   inset: 0;
-  background: linear-gradient(135deg, 
-    color-mix(in srgb, var(--accent) 15%, transparent), 
-    color-mix(in srgb, var(--accent-4) 10%, transparent) 60%,
-    transparent
-  );
+  background: linear-gradient(135deg,
+      color-mix(in srgb, var(--accent) 15%, transparent),
+      color-mix(in srgb, var(--accent-4) 10%, transparent) 60%,
+      transparent);
   pointer-events: none;
 }
 
-.summary-card > *:not(.summary-bg) {
+.summary-card>*:not(.summary-bg) {
   position: relative;
   z-index: 1;
 }
@@ -1192,10 +1208,10 @@ small {
   grid-column: 2;
   grid-row: 1;
   position: relative;
-  height: 214px;
+  height: 220px;
   border-left: 2px solid var(--axis);
   border-bottom: 2px solid var(--axis);
-  background: linear-gradient(to top, var(--grid) 1px, transparent 1px) 0 0 / 100% 25%;
+  background: linear-gradient(to top, var(--grid) 1px, transparent 1px) 0 0 / 100% 20%;
 }
 
 .y-tick-top,
@@ -1218,13 +1234,11 @@ small {
 
 .plot-bar {
   position: absolute;
-  right: 0;
   bottom: 0;
-  width: 20px;
-  background: linear-gradient(180deg, var(--bar-start), var(--bar-end));
-  box-shadow: 0 0 20px color-mix(in srgb, var(--bar-start) 40%, transparent);
-  border-radius: 4px 4px 0 0;
-  animation: barGrow 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  background: linear-gradient(180deg, rgba(119, 73, 232, 0.95), rgba(112, 53, 255, 0.85));
+  box-shadow: 0 12px 25px rgba(112, 53, 255, 0.14);
+  border-radius: 6px 6px 0 0;
+  animation: barGrow 0.7s ease-out;
   transform-origin: bottom;
 }
 
@@ -1232,6 +1246,7 @@ small {
   from {
     transform: scaleY(0);
   }
+
   to {
     transform: scaleY(1);
   }
@@ -1243,18 +1258,19 @@ small {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  font-size: 0.8rem;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-right: 8px;
+  font-size: 0.78rem;
   color: var(--muted);
   font-family: var(--font-mono);
 }
 
 .x-tick {
   max-width: 100px;
-  line-height: 1.1;
-}
-
-.x-tick.right {
-  text-align: right;
+  line-height: 1.2;
+  text-align: center;
+  flex: 1 1 0;
 }
 
 .x-axis-label {
@@ -1263,9 +1279,15 @@ small {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.88rem;
+  padding-top: 10px;
+  font-size: 0.9rem;
   color: var(--muted);
   font-weight: 600;
+}
+
+.x-tick.right {
+  text-align: right;
+}
 }
 
 /* Results Toolbar */
@@ -1321,12 +1343,12 @@ small {
   flex-shrink: 0;
 }
 
-.radio-option input:checked + .radio-visual {
+.radio-option input:checked+.radio-visual {
   border-color: var(--accent);
   background: var(--accent);
 }
 
-.radio-option input:checked + .radio-visual::after {
+.radio-option input:checked+.radio-visual::after {
   content: "";
   position: absolute;
   top: 50%;
@@ -1374,11 +1396,11 @@ small {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.toggle-option input:checked + .toggle-slider {
+.toggle-option input:checked+.toggle-slider {
   background: var(--accent);
 }
 
-.toggle-option input:checked + .toggle-slider::after {
+.toggle-option input:checked+.toggle-slider::after {
   transform: translateX(20px);
 }
 
@@ -1534,6 +1556,7 @@ pre::-webkit-scrollbar-thumb {
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -1572,7 +1595,9 @@ pre::-webkit-scrollbar-thumb {
 }
 
 @keyframes spin {
-  to { transform: translateY(-50%) rotate(360deg); }
+  to {
+    transform: translateY(-50%) rotate(360deg);
+  }
 }
 
 /* Responsive */
