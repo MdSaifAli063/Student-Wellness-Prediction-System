@@ -3,29 +3,44 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Student Dropout Risk Predictor</title>
+    <title>EduPredict AI | Student Dropout Risk Intelligence</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Manrope:wght@400;500;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body data-theme="dark">
+    <!-- Animated Background -->
+    <div class="bg-animation">
+      <div class="orb orb-1"></div>
+      <div class="orb orb-2"></div>
+      <div class="orb orb-3"></div>
+    </div>
+
     <div class="page-shell">
       <header class="hero">
         <nav class="topbar">
           <div class="brand-cluster">
             <div class="brand">
-              <span class="brand-mark">IBM</span>
+              <div class="brand-mark">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                  <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+                </svg>
+              </div>
               <div>
-                <p class="eyebrow">Student Lifestyle ML Solution</p>
-                <h1>Dropout Risk Prediction Dashboard</h1>
+                <p class="eyebrow">
+                  <span class="live-dot"></span>
+                  AI-Powered Student Analytics
+                </p>
+                <h1>EduPredict <span class="gradient-text">Intelligence</span></h1>
               </div>
             </div>
             <p class="hero-subline">
-              A refined scoring experience for your student lifestyle dataset, built for clean demos and practical use.
+              Harness the power of machine learning to identify at-risk students and enable proactive intervention with our advanced IBM Cloud-powered prediction engine.
             </p>
           </div>
 
@@ -33,45 +48,92 @@
             <label class="theme-toggle" for="themeToggle">
               <input id="themeToggle" type="checkbox" />
               <span class="theme-track">
-                <span class="theme-thumb"></span>
+                <span class="theme-thumb">
+                  <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="4"/>
+                    <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+                  </svg>
+                  <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                  </svg>
+                </span>
               </span>
-              <span class="theme-label">Light mode</span>
             </label>
-            <div class="status-pill" id="connectionStatus">Checking configuration...</div>
+            <div class="status-pill" id="connectionStatus">
+              <span class="status-indicator"></span>
+              <span class="status-text">Checking configuration...</span>
+            </div>
           </div>
         </nav>
 
         <div class="hero-grid">
           <section class="hero-copy glass-card accent-card">
-            <p class="section-tag">Problem Statement</p>
-            <h2>Predict student risk outcomes using your lifestyle dataset.</h2>
+            <div class="card-glow"></div>
+            <p class="section-tag">✨ Problem Statement</p>
+            <h2>Predict student outcomes with <span class="gradient-text">precision</span></h2>
             <p>
-              This interface is tailored to your fixed CSV schema. Add rows
-              manually or upload a matching CSV, then send batch records to your
-              IBM Cloud deployment and review the results in a polished
-              regression-style dashboard.
+              Transform your student lifestyle data into actionable insights. Upload CSVs or input records manually, 
+              then leverage IBM Cloud's ML deployment to identify dropout risks before they happen.
             </p>
             <div class="hero-points">
-              <span>Fixed 19-column schema</span>
-              <span>CSV upload and manual table</span>
-              <span>IBM Cloud batch scoring</span>
+              <span class="pill-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M9 11l3 3L22 4"/>
+                  <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                </svg>
+                19-Column Schema
+              </span>
+              <span class="pill-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+                </svg>
+                CSV Upload
+              </span>
+              <span class="pill-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/>
+                </svg>
+                Batch Scoring
+              </span>
             </div>
           </section>
 
           <section class="hero-side glass-card">
-            <p class="section-tag">Solution Highlights</p>
+            <p class="section-tag">🚀 Features</p>
             <div class="metric-grid">
               <div class="metric">
-                <strong>Dataset Specific</strong>
-                <span>Aligned to your student lifestyle columns and input order</span>
+                <div class="metric-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                  </svg>
+                </div>
+                <div>
+                  <strong>Dataset Specific</strong>
+                  <span>Aligned to your exact lifestyle schema</span>
+                </div>
               </div>
               <div class="metric">
-                <strong>Clear Results</strong>
-                <span>Switch between table and JSON views with technical details</span>
+                <div class="metric-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 3v18h18M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"/>
+                  </svg>
+                </div>
+                <div>
+                  <strong>Visual Results</strong>
+                  <span>Interactive charts and data views</span>
+                </div>
               </div>
               <div class="metric">
-                <strong>Theme Support</strong>
-                <span>Balanced dark and light modes with consistent layout</span>
+                <div class="metric-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="5"/>
+                    <path d="M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/>
+                  </svg>
+                </div>
+                <div>
+                  <strong>Dual Themes</strong>
+                  <span>Beautiful dark and light modes</span>
+                </div>
               </div>
             </div>
           </section>
@@ -82,42 +144,71 @@
         <section class="panel form-panel">
           <div class="panel-header">
             <div>
-              <p class="section-tag">Input Data</p>
+              <p class="section-tag">📊 Input Data</p>
               <h3>Enter student lifestyle records</h3>
             </div>
             <div class="header-actions">
-              <label class="file-btn secondary-btn" for="csvFileInput">Upload CSV</label>
+              <label class="file-btn secondary-btn" for="csvFileInput">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/>
+                </svg>
+                Upload CSV
+              </label>
               <input id="csvFileInput" type="file" accept=".csv,text/csv" hidden />
               <button class="secondary-btn" id="loadDemoBtn" type="button">
-                Load Demo Data
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                </svg>
+                Load Demo
               </button>
             </div>
           </div>
 
           <div class="info-grid">
             <div class="schema-box">
-              <label>Expected CSV Columns</label>
+              <label>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zM14 2v6h6M16 13H8M16 17H8M10 9H8"/>
+                </svg>
+                Expected CSV Columns
+              </label>
               <p id="schemaText" class="schema-text"></p>
               <small>
-                Use the exact same column order as your uploaded dataset for correct IBM Cloud scoring.
+                💡 Use the exact column order as your dataset for accurate scoring.
               </small>
             </div>
 
             <div class="helper-box">
-              <label>Usage Notes</label>
-              <p>Use the input table for manual entry, or upload a CSV that matches the schema exactly.</p>
+              <label>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="M12 16v-4M12 8h.01"/>
+                </svg>
+                Quick Guide
+              </label>
+              <p>Enter records manually or upload a matching CSV file. Ensure all required fields are populated.</p>
               <small>
-                Predictions depend on your IBM deployment being reachable and configured with the expected model inputs.
+                ⚡ Results depend on IBM deployment availability and configuration.
               </small>
             </div>
           </div>
 
           <div class="panel-header compact">
             <div>
-              <label>Input Table</label>
-              <small>Fill one or more student records. Leave no missing values unless your model supports them.</small>
+              <label>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 3h18v18H3zM21 9H3M21 15H3M12 3v18"/>
+                </svg>
+                Input Table
+              </label>
+              <small>Fill one or more student records below</small>
             </div>
-            <button class="secondary-btn" id="addRowBtn" type="button">Add Row</button>
+            <button class="secondary-btn" id="addRowBtn" type="button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 5v14M5 12h14"/>
+              </svg>
+              Add Row
+            </button>
           </div>
 
           <div class="table-wrap">
@@ -129,9 +220,18 @@
 
           <div class="actions">
             <button class="primary-btn" id="predictBtn" type="button">
-              Run Prediction
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+              </svg>
+              <span>Run Prediction</span>
+              <div class="btn-shine"></div>
             </button>
-            <button class="ghost-btn" id="resetBtn" type="button">Reset</button>
+            <button class="ghost-btn" id="resetBtn" type="button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8M3 3v5h5"/>
+              </svg>
+              Reset
+            </button>
           </div>
 
           <div class="message-box" id="messageBox"></div>
@@ -140,10 +240,13 @@
         <section class="panel result-panel">
           <div class="panel-header">
             <div>
-              <p class="section-tag">Prediction Output</p>
-              <h3>IBM deployment response</h3>
+              <p class="section-tag">🎯 Prediction Output</p>
+              <h3>IBM Deployment Results</h3>
             </div>
             <button class="secondary-btn" id="downloadJsonBtn" type="button">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+              </svg>
               Download JSON
             </button>
           </div>
@@ -152,15 +255,30 @@
             <div class="results-layout">
               <aside class="results-summary">
                 <div class="summary-card summary-primary">
-                  <p class="results-label">Prediction type</p>
+                  <div class="summary-bg"></div>
+                  <p class="results-label">Prediction Type</p>
                   <h2 class="results-type" id="predictionType">Regression</h2>
-                  <p class="summary-caption">Output is styled for quick review and presentation.</p>
+                  <p class="summary-caption">Output styled for quick review and presentation.</p>
                 </div>
 
                 <div class="distribution-card">
-                  <p class="results-subtitle">Prediction distribution</p>
+                  <p class="results-subtitle">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M3 3v18h18"/>
+                      <rect x="7" y="12" width="3" height="6"/>
+                      <rect x="12" y="8" width="3" height="10"/>
+                      <rect x="17" y="5" width="3" height="13"/>
+                    </svg>
+                    Distribution Analysis
+                  </p>
                   <div class="mini-chart" id="distributionChart">
-                    <div class="chart-empty">Prediction chart will appear here.</div>
+                    <div class="chart-empty">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 3v18h18"/>
+                        <path d="M18 17V9M13 17V5M8 17v-3"/>
+                      </svg>
+                      <span>Prediction chart will appear here</span>
+                    </div>
                   </div>
                 </div>
               </aside>
@@ -168,15 +286,17 @@
               <div class="results-main">
                 <div class="results-toolbar">
                   <div class="view-switch">
-                    <p class="results-label">Display format for prediction results</p>
+                    <p class="results-label">Display Format</p>
                     <div class="radio-row">
                       <label class="radio-option">
                         <input type="radio" name="resultView" value="table" checked />
-                        <span>Table view</span>
+                        <span class="radio-visual"></span>
+                        <span>📋 Table</span>
                       </label>
                       <label class="radio-option">
                         <input type="radio" name="resultView" value="json" />
-                        <span>JSON view</span>
+                        <span class="radio-visual"></span>
+                        <span>{ } JSON</span>
                       </label>
                     </div>
                   </div>
@@ -204,15 +324,20 @@
             </div>
 
             <details class="debug-section">
-              <summary>Technical details</summary>
+              <summary>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+                </svg>
+                Technical Details
+              </summary>
               <div class="debug-grid">
                 <div class="output-card">
-                  <div class="output-title">Submitted Payload</div>
+                  <div class="output-title">📤 Submitted Payload</div>
                   <pre id="payloadOutput">No request submitted yet.</pre>
                 </div>
 
                 <div class="output-card">
-                  <div class="output-title">Raw IBM Cloud Response</div>
+                  <div class="output-title">📥 Raw IBM Cloud Response</div>
                   <pre id="resultOutput">Prediction results will appear here.</pre>
                 </div>
               </div>
@@ -220,6 +345,10 @@
           </section>
         </section>
       </main>
+
+      <footer class="footer">
+        <p>Built with ❤️ using IBM Cloud ML • <span class="gradient-text">EduPredict Intelligence</span></p>
+      </footer>
     </div>
 
     <script src="/script.js"></script>
