@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 3000;
 
 const API_KEY = process.env.API_KEY;
 const SCORING_URL = process.env.SCORING_URL;
-const FIXED_FIELDS = [
+const DEFAULT_FIELDS = [
   "age",
   "gender",
   "academic_year",
@@ -17,7 +17,6 @@ const FIXED_FIELDS = [
   "academic_performance",
   "stress_level",
   "anxiety_score",
-  "depression_score",
   "sleep_hours",
   "physical_activity",
   "social_support",
@@ -30,6 +29,12 @@ const FIXED_FIELDS = [
   "risk_level",
   "dropout_risk",
 ];
+
+const MODEL_FIELDS = process.env.MODEL_FIELDS
+  ? process.env.MODEL_FIELDS.split(",")
+      .map((field) => String(field || "").trim())
+      .filter(Boolean)
+  : null;
 
 app.use(express.json({ limit: "1mb" }));
 app.use(express.static(path.join(__dirname, "public")));
@@ -54,7 +59,7 @@ async function getIamToken() {
         Accept: "application/json",
       },
       timeout: 20000,
-    }
+    },
   );
 
   return response.data.access_token;
@@ -68,9 +73,9 @@ function normalizeValues(values) {
   return values.map((row) =>
     Array.isArray(row)
       ? row.map((value) =>
-          value === "" || value === null || value === undefined ? null : value
+          value === "" || value === null || value === undefined ? null : value,
         )
-      : []
+      : [],
   );
 }
 
@@ -78,9 +83,55 @@ app.get("/api/config", (_req, res) => {
   res.json({
     hasApiKey: Boolean(API_KEY),
     hasScoringUrl: Boolean(SCORING_URL),
+    hasModelSchema: Array.isArray(MODEL_FIELDS) && MODEL_FIELDS.length > 0,
     scoringUrl: SCORING_URL || "",
-    fields: FIXED_FIELDS,
+    fields: MODEL_FIELDS || DEFAULT_FIELDS,
   });
+});
+
+app.get("/api/debug-schema", async (_req, res) => {
+  if (!API_KEY || !SCORING_URL) {
+    return res.status(400).json({
+      error: "API_KEY and SCORING_URL must be configured",
+    });
+  }
+
+  try {
+    const token = await getIamToken();
+    const activeFields = MODEL_FIELDS || DEFAULT_FIELDS;
+    const testPayload = {
+      input_data: [
+        {
+          fields: activeFields,
+          values: [Array(activeFields.length).fill(0)],
+        },
+      ],
+    };
+
+    const response = await axios.post(SCORING_URL, testPayload, {
+      proxy: false,
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json;charset=UTF-8",
+      },
+      timeout: 30000,
+    });
+
+    return res.json({
+      success: true,
+      message: "Schema test passed. Your fields are correct.",
+      fieldsSent: activeFields,
+      ibmResponse: response.data,
+    });
+  } catch (error) {
+    return res.status(error.response?.status || 500).json({
+      success: false,
+      message: "Schema test failed.",
+      fieldsTested: MODEL_FIELDS || DEFAULT_FIELDS,
+      error: error.response?.data || error.message,
+    });
+  }
 });
 
 app.post("/api/predict", async (req, res) => {
@@ -104,7 +155,7 @@ app.post("/api/predict", async (req, res) => {
       .filter(Boolean);
 
     const cleanedValues = normalizeValues(values).filter(
-      (row) => row.length === cleanedFields.length
+      (row) => row.length === cleanedFields.length,
     );
 
     if (cleanedFields.length === 0) {
@@ -113,15 +164,15 @@ app.post("/api/predict", async (req, res) => {
       });
     }
 
+    const fieldsToCheck = MODEL_FIELDS || DEFAULT_FIELDS;
     const schemaMatches =
-      cleanedFields.length === FIXED_FIELDS.length &&
-      cleanedFields.every((field, index) => field === FIXED_FIELDS[index]);
+      cleanedFields.length === fieldsToCheck.length &&
+      cleanedFields.every((field, index) => field === fieldsToCheck[index]);
 
     if (!schemaMatches) {
       return res.status(400).json({
-        error:
-          "This app accepts only the student lifestyle dataset schema. Use the exact required 19 columns in the correct order.",
-        expectedFields: FIXED_FIELDS,
+        error: `This app requires exact field match. Expected: ${fieldsToCheck.join(", ")}. If MODEL_FIELDS is not in .env, set it to your IBM model's exact input fields.`,
+        expectedFields: fieldsToCheck,
       });
     }
 
@@ -158,9 +209,17 @@ app.post("/api/predict", async (req, res) => {
       prediction: response.data,
     });
   } catch (error) {
-    const status = error.response?.status || 500;
+    const status =
+      error.code === "ETIMEDOUT" ? 504 : error.response?.status || 500;
+    let errorMessage = error.message || "Unknown error.";
+
+    if (error.code === "ETIMEDOUT") {
+      errorMessage =
+        "IBM Cloud request timed out. Confirm SCORING_URL is reachable and not a private endpoint.";
+    }
+
     const details = {
-      message: error.message,
+      message: errorMessage,
       code: error.code || null,
       status: error.response?.status || null,
       statusText: error.response?.statusText || null,
