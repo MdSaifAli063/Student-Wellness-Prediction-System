@@ -25,11 +25,11 @@ const FIXED_FIELDS = [
   "age",
   "gender",
   "academic_year",
+  "study_hours_per_day",
   "exam_pressure",
   "academic_performance",
   "stress_level",
   "anxiety_score",
-  "depression_score",
   "sleep_hours",
   "physical_activity",
   "social_support",
@@ -60,14 +60,16 @@ function initializeTheme() {
     return;
   }
 
-  const prefersLight = window.matchMedia("(prefers-color-scheme: light)").matches;
+  const prefersLight = window.matchMedia(
+    "(prefers-color-scheme: light)",
+  ).matches;
   setTheme(prefersLight ? "light" : "dark");
 }
 
 function setMessage(type, text) {
   messageBox.className = `message-box show ${type}`;
   messageBox.textContent = text;
-  
+
   // Auto-hide success/info messages
   if (type === "success" || type === "info") {
     setTimeout(() => {
@@ -130,7 +132,7 @@ function renderHeader() {
   tableHead.innerHTML = `
     <tr>
       <th class="row-index">#</th>
-      ${FIXED_FIELDS.map((field) => `<th>${field.replace(/_/g, ' ')}</th>`).join("")}
+      ${FIXED_FIELDS.map((field) => `<th>${field.replace(/_/g, " ")}</th>`).join("")}
       <th class="table-action-cell">Action</th>
     </tr>
   `;
@@ -188,7 +190,7 @@ function getTableRows() {
       FIXED_FIELDS.map((field) => {
         const input = row.querySelector(`input[data-field="${field}"]`);
         return castValue(input.value.trim());
-      })
+      }),
     )
     .filter((row) => row.some((value) => value !== ""));
 }
@@ -202,13 +204,9 @@ function parsePredictionRows(responseData) {
 
   const firstPrediction = predictions[0];
   const fields =
-    firstPrediction.fields ||
-    firstPrediction.predictions?.[0]?.fields ||
-    [];
+    firstPrediction.fields || firstPrediction.predictions?.[0]?.fields || [];
   const values =
-    firstPrediction.values ||
-    firstPrediction.predictions?.[0]?.values ||
-    [];
+    firstPrediction.values || firstPrediction.predictions?.[0]?.values || [];
 
   if (!Array.isArray(fields) || !Array.isArray(values)) {
     return [];
@@ -223,13 +221,18 @@ function parsePredictionRows(responseData) {
   });
 }
 
-function getRenderedPredictionRows(predictionRows, submittedValues, includeInputData) {
+function getRenderedPredictionRows(
+  predictionRows,
+  submittedValues,
+  includeInputData,
+) {
   return predictionRows.map((row, rowIndex) => {
     const rendered = { ...row };
 
     if (includeInputData) {
       FIXED_FIELDS.forEach((field, columnIndex) => {
-        rendered[`input_${field}`] = submittedValues[rowIndex]?.[columnIndex] ?? null;
+        rendered[`input_${field}`] =
+          submittedValues[rowIndex]?.[columnIndex] ?? null;
       });
     }
 
@@ -284,21 +287,28 @@ function renderDistribution(predictionRows) {
   if (!numericValues.length) {
     // For classification, show category counts
     const counts = {};
-    values.forEach(v => { counts[v] = (counts[v] || 0) + 1; });
+    values.forEach((v) => {
+      counts[v] = (counts[v] || 0) + 1;
+    });
     const categories = Object.keys(counts);
     const maxCount = Math.max(...Object.values(counts));
-    
-    const bars = categories.map((cat, idx) => {
-      const height = (counts[cat] / maxCount) * 180;
-      const width = 100 / categories.length - 4;
-      const left = (100 / categories.length) * idx + 2;
-      return `<div class="plot-bar" style="height:${height}px;width:${width}%;left:${left}%;right:auto;animation-delay:${idx * 0.1}s"></div>`;
-    }).join("");
-    
-    const labels = categories.map((cat, idx) => 
-      `<span class="x-tick" style="flex:1;text-align:center">${escapeHtml(cat)}</span>`
-    ).join("");
-    
+
+    const bars = categories
+      .map((cat, idx) => {
+        const height = (counts[cat] / maxCount) * 180;
+        const width = 100 / categories.length - 4;
+        const left = (100 / categories.length) * idx + 2;
+        return `<div class="plot-bar" style="height:${height}px;width:${width}%;left:${left}%;right:auto;animation-delay:${idx * 0.1}s"></div>`;
+      })
+      .join("");
+
+    const labels = categories
+      .map(
+        (cat, idx) =>
+          `<span class="x-tick" style="flex:1;text-align:center">${escapeHtml(cat)}</span>`,
+      )
+      .join("");
+
     distributionChart.innerHTML = `
       <div class="distribution-plot">
         <div class="y-axis-label">Count</div>
@@ -316,39 +326,50 @@ function renderDistribution(predictionRows) {
 
   const minValue = Math.min(...numericValues);
   const maxValue = Math.max(...numericValues);
-  
-  // Create histogram bins
-  const binCount = Math.min(10, numericValues.length);
+
+  const binCount = Math.min(4, Math.max(2, numericValues.length));
   const binSize = (maxValue - minValue) / binCount || 1;
   const bins = new Array(binCount).fill(0);
-  
-  numericValues.forEach(v => {
-    const binIndex = Math.min(Math.floor((v - minValue) / binSize), binCount - 1);
+
+  numericValues.forEach((v) => {
+    const binIndex = Math.min(
+      Math.floor(binSize > 0 ? (v - minValue) / binSize : 0),
+      binCount - 1,
+    );
     bins[binIndex]++;
   });
-  
+
   const maxBinCount = Math.max(...bins);
-  
-  const bars = bins.map((count, idx) => {
-    const height = maxBinCount > 0 ? (count / maxBinCount) * 180 : 0;
-    const width = 100 / binCount - 1;
-    const left = (100 / binCount) * idx + 0.5;
-    return `<div class="plot-bar" style="height:${height}px;width:${width}%;left:${left}%;right:auto;animation-delay:${idx * 0.05}s" title="${count}"></div>`;
-  }).join("");
+
+  const formatValue = (value) => {
+    if (Math.abs(value) >= 1000 || Math.abs(value) < 0.01) {
+      return value.toExponential(2);
+    }
+    return Number.isInteger(value) ? `${value}` : value.toFixed(2);
+  };
+
+  const bars = bins
+    .map((count, idx) => {
+      const height = maxBinCount > 0 ? (count / maxBinCount) * 180 : 0;
+      const width = 20;
+      const left = 10 + idx * (80 / (binCount - 1));
+      return `<div class="plot-bar" style="height:${height}px;width:${width}px;left:${left}%;animation-delay:${idx * 0.05}s" title="${count} predictions"></div>`;
+    })
+    .join("");
 
   distributionChart.innerHTML = `
     <div class="distribution-plot">
-      <div class="y-axis-label">Frequency</div>
+      <div class="y-axis-label">Number of predictions</div>
       <div class="plot-area">
         <div class="y-tick-top">${maxBinCount}</div>
         <div class="y-tick-bottom">0</div>
         ${bars}
       </div>
       <div class="x-axis">
-        <span class="x-tick">${escapeHtml(minValue.toFixed(2))}</span>
-        <span class="x-tick right">${escapeHtml(maxValue.toFixed(2))}</span>
+        <span class="x-tick">${escapeHtml(formatValue(minValue))}</span>
+        <span class="x-tick right">${escapeHtml(formatValue(maxValue))}</span>
       </div>
-      <div class="x-axis-label">Prediction Value</div>
+      <div class="x-axis-label">Prediction value</div>
     </div>
   `;
 }
@@ -357,7 +378,7 @@ function renderPredictionTable(rows) {
   if (!rows.length) {
     predictionTableHead.innerHTML = "<tr><th>#</th><th>Prediction</th></tr>";
     predictionTableBody.innerHTML =
-      '<tr><td>1</td><td>Prediction results will appear here.</td></tr>';
+      "<tr><td>1</td><td>Prediction results will appear here.</td></tr>";
     return;
   }
 
@@ -365,7 +386,7 @@ function renderPredictionTable(rows) {
   predictionTableHead.innerHTML = `
     <tr>
       <th>#</th>
-      ${columns.map((column) => `<th>${escapeHtml(column.replace(/_/g, ' '))}</th>`).join("")}
+      ${columns.map((column) => `<th>${escapeHtml(column.replace(/_/g, " "))}</th>`).join("")}
     </tr>
   `;
 
@@ -374,13 +395,15 @@ function renderPredictionTable(rows) {
       (row, index) => `
         <tr>
           <td class="row-index">${index + 1}</td>
-          ${columns.map((column) => {
-            const val = row[column];
-            const isNumeric = typeof val === 'number';
-            return `<td>${isNumeric ? val.toFixed(4) : escapeHtml(val)}</td>`;
-          }).join("")}
+          ${columns
+            .map((column) => {
+              const val = row[column];
+              const isNumeric = typeof val === "number";
+              return `<td>${isNumeric ? val.toFixed(4) : escapeHtml(val)}</td>`;
+            })
+            .join("")}
         </tr>
-      `
+      `,
     )
     .join("");
 }
@@ -390,7 +413,7 @@ function updateResultViews() {
   const renderedRows = getRenderedPredictionRows(
     latestPredictionRows,
     latestSubmittedValues,
-    includeInputData
+    includeInputData,
   );
 
   renderPredictionTable(renderedRows);
@@ -440,7 +463,9 @@ async function loadCsvFile(file) {
     header.every((field, index) => field === FIXED_FIELDS[index]);
 
   if (!headerMatches) {
-    throw new Error("CSV header does not match the required student lifestyle schema.");
+    throw new Error(
+      "CSV header does not match the required student lifestyle schema.",
+    );
   }
 
   const rows = lines.slice(1).map((line) => parseCsvLine(line));
@@ -460,7 +485,10 @@ async function loadCsvFile(file) {
     addTableRow(rowObject);
   });
 
-  setMessage("success", `✅ Loaded ${rows.length} row(s) from CSV successfully!`);
+  setMessage(
+    "success",
+    `✅ Loaded ${rows.length} row(s) from CSV successfully!`,
+  );
 }
 
 async function fetchConfig() {
@@ -496,11 +524,11 @@ function loadDemoData() {
     age: 20,
     gender: "Male",
     academic_year: 2,
+    study_hours_per_day: 4,
     exam_pressure: 7,
     academic_performance: 6.8,
     stress_level: 8,
     anxiety_score: 7,
-    depression_score: 5,
     sleep_hours: 5.5,
     physical_activity: 2,
     social_support: 6,
@@ -517,11 +545,11 @@ function loadDemoData() {
     age: 22,
     gender: "Female",
     academic_year: 4,
+    study_hours_per_day: 5,
     exam_pressure: 4,
     academic_performance: 8.4,
     stress_level: 4,
     anxiety_score: 3,
-    depression_score: 2,
     sleep_hours: 7.2,
     physical_activity: 6,
     social_support: 8,
@@ -552,7 +580,7 @@ async function runPrediction() {
   if (invalidRow) {
     setMessage(
       "error",
-      `⚠️ Each row must contain exactly ${fields.length} values to match the dataset schema.`
+      `⚠️ Each row must contain exactly ${fields.length} values to match the dataset schema.`,
     );
     return;
   }
@@ -589,20 +617,51 @@ async function runPrediction() {
     payloadOutput.textContent = JSON.stringify(data.submittedPayload, null, 2);
     updateResultViews();
     renderDistribution(latestPredictionRows);
-    setMessage("success", `✅ Prediction completed! ${latestPredictionRows.length} result(s) returned.`);
-    
+    setMessage(
+      "success",
+      `✅ Prediction completed! ${latestPredictionRows.length} result(s) returned.`,
+    );
+
     // Scroll to results
-    document.querySelector('.result-panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    document
+      .querySelector(".result-panel")
+      .scrollIntoView({ behavior: "smooth", block: "start" });
   } catch (error) {
-    resultOutput.textContent =
-      error.message || "An unknown error occurred while scoring.";
+    let errorMsg = error.message || "An unknown error occurred while scoring.";
+    let userMessage = "❌ Prediction failed. ";
+
+    try {
+      const parsed = JSON.parse(errorMsg);
+
+      // Extract IBM deployment error details
+      if (parsed?.details?.data?.errors?.length) {
+        const ibmErrors = parsed.details.data.errors
+          .map((err) => err.message)
+          .join(" ");
+        errorMsg = ibmErrors;
+        userMessage += `IBM deployment error: ${ibmErrors}`;
+      } else if (parsed?.details?.message) {
+        errorMsg = parsed.details.message;
+        userMessage += parsed.details.message;
+      } else if (parsed?.error) {
+        errorMsg = parsed.error;
+        userMessage += parsed.error;
+      } else {
+        userMessage +=
+          "Check your IBM API key, scoring URL, and deployment configuration.";
+      }
+    } catch (_parseErr) {
+      // If it's not JSON, show the raw error
+      userMessage +=
+        errorMsg ||
+        "Check your IBM API key, scoring URL, and deployment configuration.";
+    }
+
+    resultOutput.textContent = errorMsg;
     latestPredictionRows = [];
     updateResultViews();
     renderDistribution([]);
-    setMessage(
-      "error",
-      "❌ Prediction failed. Check your IBM API key, scoring URL, and deployment configuration."
-    );
+    setMessage("error", userMessage);
   } finally {
     predictBtn.disabled = false;
     predictBtn.innerHTML = originalContent;
@@ -624,7 +683,7 @@ function resetAll() {
 }
 
 // Add slideOut animation
-const style = document.createElement('style');
+const style = document.createElement("style");
 style.textContent = `
   @keyframes slideOut {
     to {
@@ -656,7 +715,10 @@ csvFileInput.addEventListener("change", async (event) => {
   try {
     await loadCsvFile(file);
   } catch (error) {
-    setMessage("error", `❌ ${error.message || "Unable to load the CSV file."}`);
+    setMessage(
+      "error",
+      `❌ ${error.message || "Unable to load the CSV file."}`,
+    );
   } finally {
     csvFileInput.value = "";
   }
@@ -669,12 +731,12 @@ document.querySelectorAll('input[name="resultView"]').forEach((input) => {
 });
 
 // Keyboard shortcuts
-document.addEventListener('keydown', (e) => {
-  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+document.addEventListener("keydown", (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
     e.preventDefault();
     runPrediction();
   }
-  if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
+  if ((e.ctrlKey || e.metaKey) && e.key === "d") {
     e.preventDefault();
     loadDemoData();
   }
